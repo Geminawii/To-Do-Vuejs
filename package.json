@@ -1,0 +1,58 @@
+{
+  "name": "justdoeet-vuejs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.23",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@tanstack/vue-query": "^5.90.2",
+    "@vueuse/core": "^13.9.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "fuse.js": "^7.1.0",
+    "lucide-vue-next": "^0.544.0",
+    "motion-v": "^1.7.2",
+    "pinia": "^3.0.3",
+    "postcss": "^8.5.6",
+    "radix-vue": "^1.9.17",
+    "reka-ui": "^2.5.1",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.13",
+    "tw-animate-css": "^1.4.0",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1",
+    "vue-sonner": "^2.0.8",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "@iconify/vue": "^5.0.0",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^22.18.7",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.31.0",
+    "eslint-plugin-vue": "~10.3.0",
+    "jiti": "^2.4.2",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "3.6.2",
+    "typescript": "~5.8.0",
+    "vite": "^7.0.6",
+    "vite-plugin-vue-devtools": "^8.0.0",
+    "vue-tsc": "^3.0.4"
+  }
+}
