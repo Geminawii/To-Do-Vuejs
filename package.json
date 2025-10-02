@@ -8,14 +8,14 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "server": "tsx src/api/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+     "build": "vite build && tsup src/api/server.ts --format esm --out-dir dist"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -60,6 +60,7 @@
     "npm-run-all2": "^8.0.4",
     "prettier": "3.6.2",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "~5.8.0",
     "vite": "^7.0.6",
