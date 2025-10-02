@@ -9,7 +9,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
-import ChatBot from './ChatBot.vue'
+import ChatBot from './JustAskEet.vue'
 import AddToDo from '../modals/AddToDo.vue'
 
 interface Props {
@@ -229,7 +229,7 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
               </Button>
             </div>
           </div>
-          <p v-else class="text-gray-500 text-center">Great Job! You have completed all tasks.</p>
+          <p v-else class="text-gray-500 text-center">No To-Dos Found.</p>
         </CardContent>
       </Card>
 
