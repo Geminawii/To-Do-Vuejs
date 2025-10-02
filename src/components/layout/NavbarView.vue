@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
-import { Menu } from "lucide-vue-next";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +11,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-
 
 const props = withDefaults(defineProps<{
   searchTerm?: string
@@ -26,8 +24,6 @@ const emit = defineEmits<{
   (e: 'update:searchTerm', value: string): void
   (e: 'update:filter', value: 'all' | 'completed' | 'incomplete'): void
 }>()
-
-
 
 const router = useRouter();
 const route = useRoute();
@@ -74,14 +70,18 @@ const handleLogout = () => {
   }, 3000);
 };
 
-
 const localSearchTerm = ref(props.searchTerm ?? "");
 const localFilter = ref(props.filter ?? "all");
-
 
 watch(localSearchTerm, (val) => emit('update:searchTerm', val))
 watch(localFilter, (val) => emit('update:filter', val))
 
+// nav links for dropdown
+const navLinks = [
+  { label: "Dashboard", path: "/dashboard", icon: "mdi:view-dashboard" },
+  { label: "Categories", path: "/categories", icon: "mdi:folder" },
+  { label: "Settings", path: "/settings", icon: "mdi:cog" },
+];
 </script>
 
 <template>
@@ -90,7 +90,7 @@ watch(localFilter, (val) => emit('update:filter', val))
     role="navigation"
     aria-label="Main Navigation"
   >
-
+    <!-- Logo -->
     <div class="flex items-center h-full" aria-label="Application Logo">
       <img
         src="/images/logo.png"
@@ -99,13 +99,13 @@ watch(localFilter, (val) => emit('update:filter', val))
       />
     </div>
 
+    <!-- Desktop actions -->
     <div class="hidden lg:flex items-center space-x-6">
       <div v-if="isDashboard && props.searchTerm !== undefined" class="relative w-48">
         <span class="absolute left-2 top-2.5 text-orange-800">
           <Icon icon="mdi:magnify" class="w-5 h-5" />
         </span>
         <Label class="sr-only">Search</Label>
-
         <Input
           type="text"
           placeholder="Search todos..."
@@ -136,22 +136,22 @@ watch(localFilter, (val) => emit('update:filter', val))
       </div>
     </div>
 
-
+    <!-- Mobile dropdown -->
     <div class="lg:hidden">
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button variant="ghost" aria-label="Open Menu">
-            <Menu />
+            <Icon icon="mdi:menu" class="w-6 h-6 text-orange-800" />
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="center" side="bottom" class="p-4 w-screen">
+          <!-- Search + filter -->
           <div v-if="isDashboard && props.searchTerm !== undefined" class="relative w-full mb-4">
             <span class="absolute left-2 top-2.5 text-orange-800">
               <Icon icon="mdi:magnify" class="w-5 h-5" />
             </span>
             <Label class="sr-only">Search</Label>
-
             <Input
               type="text"
               placeholder="Search todos..."
@@ -170,6 +170,7 @@ watch(localFilter, (val) => emit('update:filter', val))
             <option value="incomplete">Incomplete</option>
           </select>
 
+          <!-- Date + Time -->
           <div class="flex flex-col text-sm text-gray-700 leading-tight mb-4" aria-label="Current Date and Time">
             <div class="flex items-center gap-1">
               <Icon icon="mdi:calendar" class="w-4 h-4" />
@@ -181,7 +182,19 @@ watch(localFilter, (val) => emit('update:filter', val))
             </div>
           </div>
 
-          <nav class="mt-6 space-y-4 text-orange-800 text-sm font-semibold">
+          <!-- Nav Links -->
+          <nav class="mt-4 space-y-2 text-orange-800 text-sm font-semibold">
+            <DropdownMenuItem v-for="link in navLinks" :key="link.path" as-child>
+              <button
+                @click="router.push(link.path)"
+                class="flex items-center gap-2 p-2 w-full text-left hover:text-orange-900"
+              >
+                <Icon :icon="link.icon" class="w-5 h-5" />
+                <span>{{ link.label }}</span>
+              </button>
+            </DropdownMenuItem>
+
+            <!-- Logout -->
             <DropdownMenuItem as-child>
               <button
                 @click="handleLogout"

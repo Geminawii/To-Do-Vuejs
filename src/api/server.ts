@@ -3,6 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import Fuse from 'fuse.js'
 import type { Request, Response } from 'express'
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config()
 
@@ -188,7 +190,7 @@ You can also offer motivation, productivity tips, general knowledge or jokes in 
   return reply ?? 'Sorry, I could not understand that.'
 }
 
-// POST route
+
 app.post('/api/chat', async (req: Request, res: Response) => {
   try {
     const { messages } = req.body as { messages: ChatMessage[] }
@@ -204,6 +206,18 @@ app.post('/api/chat', async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Something went wrong' })
   }
 })
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`)

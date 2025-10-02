@@ -9,6 +9,7 @@ import EditTodoModal from '@/components/modals/EditToDo.vue'
 import LoaderComp from '@/components/ui/LoaderComp.vue'
 import { Dialog, TransitionRoot, TransitionChild, DialogPanel } from '@headlessui/vue'
 import { useTodoDetail } from '@/composables/useToDoDetail'
+import JustAskEet from '@/components/misc/JustAskEet.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -208,6 +209,7 @@ onMounted(() => {
             </ul>
           </CardContent>
         </Card>
+        <JustAskEet />
       </main>
     </div>
   </div>

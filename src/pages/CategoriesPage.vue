@@ -9,6 +9,7 @@ import { Dialog, DialogTitle, DialogContent } from '@/components/ui/dialog'
 import { useCategories } from '@/composables/useCategories'
 import { assignTodoToCategory } from '@/utils/localsstorage'
 import { Icon } from '@iconify/vue'
+import JustAskEet from '@/components/misc/JustAskEet.vue'
 
 const {
   categories,
@@ -166,5 +167,6 @@ const handleAssignTodo = async (todoId: number) => {
         </div>
       </DialogContent>
     </Dialog>
+    <JustAskEet />
   </div>
 </template>
