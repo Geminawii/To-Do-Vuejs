@@ -14,7 +14,6 @@ const route = useRoute()
 const router = useRouter()
 const id = route.params.id as string
 
-
 const {
   data,
   isFetching,
@@ -42,7 +41,6 @@ onMounted(() => {
 
     <div class="flex mt-2 sm:mt-5">
       <main class="flex-1 p-4 sm:p-6">
-
         <div
           v-if="isFetching || !showContent"
           class="flex flex-col items-center justify-center h-screen space-y-4 bg-orange-50 p-4"
@@ -51,14 +49,12 @@ onMounted(() => {
           <span class="text-lg font-semibold text-orange-800">Loading task...</span>
         </div>
 
-
         <div
           v-else-if="isError"
           class="min-h-screen flex items-center justify-center text-amber-800 p-4 font-extrabold"
         >
           Failed to load.
         </div>
-
 
         <div
           v-else-if="!todo"
@@ -67,22 +63,22 @@ onMounted(() => {
           Todo not found.
         </div>
 
-
         <Card v-else class="max-w-4xl w-full mx-auto shadow-md">
           <CardContent class="p-4 sm:p-6 flex flex-col gap-4">
-            <Button
-              variant="link"
-              @click="router.push('/dashboard')"
-              class="text-orange-800 p-0 text-sm sm:text-base"
-            >
-              Back to Dashboard
-            </Button>
+            <div class="w-full flex justify-start">
+              <Button
+                variant="link"
+                @click="router.push('/dashboard')"
+                class="text-orange-800 p-0 text-sm sm:text-base text-left"
+              >
+                Back to Dashboard
+              </Button>
+            </div>
 
             <div class="flex items-center justify-between">
               <h1 class="text-xl sm:text-2xl font-semibold text-orange-900">{{ todo.todo }}</h1>
 
               <div class="flex gap-2">
-
                 <Button
                   size="icon"
                   variant="ghost"
@@ -91,7 +87,6 @@ onMounted(() => {
                 >
                   <Icon icon="mdi:pencil" class="w-5 h-5 text-orange-800" />
                 </Button>
-
 
                 <TransitionRoot appear :show="isEditDialogOpen">
                   <Dialog
@@ -127,7 +122,6 @@ onMounted(() => {
                   </Dialog>
                 </TransitionRoot>
 
-
                 <Button
                   size="icon"
                   variant="ghost"
@@ -136,7 +130,6 @@ onMounted(() => {
                 >
                   <Icon icon="mdi:trash-can-outline" class="w-5 h-5 text-orange-800" />
                 </Button>
-
 
                 <TransitionRoot appear :show="isDeleteDialogOpen">
                   <Dialog
@@ -175,7 +168,6 @@ onMounted(() => {
                 </TransitionRoot>
               </div>
             </div>
-
 
             <ul
               class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base text-gray-700 mt-4"

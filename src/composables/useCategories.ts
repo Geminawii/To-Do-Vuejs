@@ -1,6 +1,5 @@
-// composables/useCategories.ts
 import { ref, computed } from 'vue'
-import { toast } from 'sonner'
+import { toast } from 'vue-sonner'
 import type { LocalCategory, Todo } from '@/types'
 import {
   getCategoriesFromLocal,

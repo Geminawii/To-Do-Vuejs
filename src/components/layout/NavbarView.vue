@@ -11,13 +11,23 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 
-const props = defineProps<{
-  searchTerm?: string;
-  setSearchTerm?: (val: string) => void;
-  filter?: string;
-  setFilter?: (val: string) => void;
-}>();
+
+const props = withDefaults(defineProps<{
+  searchTerm?: string
+  filter?: 'all' | 'completed' | 'incomplete'
+}>(), {
+  searchTerm: '',
+  filter: 'all',
+})
+
+const emit = defineEmits<{
+  (e: 'update:searchTerm', value: string): void
+  (e: 'update:filter', value: 'all' | 'completed' | 'incomplete'): void
+}>()
+
+
 
 const router = useRouter();
 const route = useRoute();
@@ -69,8 +79,9 @@ const localSearchTerm = ref(props.searchTerm ?? "");
 const localFilter = ref(props.filter ?? "all");
 
 
-watch(localSearchTerm, (val) => props.setSearchTerm?.(val));
-watch(localFilter, (val) => props.setFilter?.(val));
+watch(localSearchTerm, (val) => emit('update:searchTerm', val))
+watch(localFilter, (val) => emit('update:filter', val))
+
 </script>
 
 <template>

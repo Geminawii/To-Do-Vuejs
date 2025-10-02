@@ -1,11 +1,9 @@
-<!-- src/pages/Dashboard.vue -->
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import localforage from 'localforage'
 import Navbar from '@/components/layout/NavbarView.vue'
 import Sidebar from '@/components/layout/SidebarResponsive.vue'
 import MainContent from '@/components/misc/MainContent.vue'
-
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type User = any
@@ -24,12 +22,7 @@ onMounted(async () => {
 
 <template>
   <main class="min-h-screen bg-orange-50">
-    <Navbar
-      :search-term="searchTerm"
-      @update:search-term="(val: string) => (searchTerm = val)"
-      :filter="filter"
-      @update:filter="(val: 'all' | 'completed' | 'incomplete') => (filter = val)"
-    />
+    <Navbar v-model:searchTerm="searchTerm" v-model:filter="filter" />
 
     <div class="flex mt-5">
       <div class="hidden lg:block sticky top-0 h-screen">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { toast } from "sonner";
+import { toast } from "vue-sonner";
 import localforage from "localforage";
 import { useQueryClient } from "@tanstack/vue-query";
 import { Card, CardContent } from "@/components/ui/card";
@@ -72,7 +72,7 @@ const handleUpdate = async () => {
     }
 
     if (updatedTodo) {
-
+      // Update single todo cache
       queryClient.setQueryData<Todo>(["todo", props.todo.id], updatedTodo);
 
       queryClient.setQueryData<{ todos: Todo[] }>(["todos"], (old) => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { toast } from 'vue-sonner'
 import Navbar from '@/components/layout/NavbarView.vue'
 import Sidebar from '@/components/layout/SidebarResponsive.vue'
 import { Input } from '@/components/ui/input'
@@ -39,7 +40,7 @@ const openTodoDialog = (catId: number) => {
 const handleAssignTodo = async (todoId: number) => {
   if (!selectedCategoryId.value) return
   await assignTodoToCategory(todoId, selectedCategoryId.value)
-  // toast.success('Todo added to category.')
+  toast.success('Todo added to category.')
   dialogOpen.value = false
   await loadCategories()
 }

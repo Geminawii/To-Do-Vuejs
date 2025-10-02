@@ -3,15 +3,14 @@ import { ref, computed } from 'vue'
 import { useTodos } from '@/composables/useToDos'
 import TimeGreeting from './TimeGreeting.vue'
 import TaskItem from './TaskItem.vue'
-import Draggable from "vuedraggable"
-import { Icon } from "@iconify/vue"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
-import { Progress } from "@/components/ui/progress"
+import Draggable from 'vuedraggable'
+import { Icon } from '@iconify/vue'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
 import ChatBot from './ChatBot.vue'
 import AddToDo from '../modals/AddToDo.vue'
-
 
 interface Props {
   user?: string
@@ -42,9 +41,40 @@ const filteredTodos = computed(() => {
 
 const pageSize = 10
 const totalPages = computed(() => Math.ceil(filteredTodos.value.length / pageSize))
+
+const paginationRange = computed(() => {
+  const total = totalPages.value
+  const current = page.value
+  const delta = 2
+  const range: (number | string)[] = []
+
+  range.push(1)
+
+  if (current - delta > 2) {
+    range.push('...')
+  }
+
+  for (let i = current - delta; i <= current + delta; i++) {
+    if (i > 1 && i < total) {
+      range.push(i)
+    }
+  }
+
+  if (current + delta < total - 1) {
+    range.push('...')
+  }
+
+  if (total > 1) {
+    range.push(total)
+  }
+
+  return range
+})
+
 const paginatedTodos = computed(() => {
-  const startIdx = (page.value - 1) * pageSize
-  return filteredTodos.value.slice(startIdx, startIdx + pageSize)
+  const start = (page.value - 1) * pageSize
+  const end = start + pageSize
+  return filteredTodos.value.slice(start, end)
 })
 
 const handleToggleSelect = (id: string | number) => {
@@ -82,6 +112,7 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
 
 <template>
   <p v-if="isError" aria-live="assertive" class="p-6 text-orange-800">Error loading todos.</p>
+  <p v-if="isLoading" aria-live="assertive" class="p-6 text-orange-800">Loading your todos...</p>
 
   <p
     v-else-if="!isLoading && allTodos.length === 0"
@@ -90,13 +121,11 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
     No tasks available just yet!
   </p>
 
-
-  <Card class=" bg-white rounded-md shadow-md relative w-full">
+  <Card class="bg-white rounded-md shadow-md relative w-full">
     <CardHeader>
       <TimeGreeting />
     </CardHeader>
     <CardContent class="flex flex-col gap-6">
-
       <Card class="p-3 w-full">
         <CardHeader class="flex flex-col items-center gap-3">
           <h2 class="text-lg font-semibold text-center">To-Do List</h2>
@@ -157,22 +186,45 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
             </Draggable>
 
             <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
-              <Button variant="outline" :disabled="page <= 1" @click="page--" class="text-orange-800">
+              <Button
+                variant="outline"
+                :disabled="page <= 1"
+                @click="page--"
+                class="text-orange-800"
+              >
                 Prev
               </Button>
 
+              <div class="hidden sm:flex gap-2">
+                <template v-for="(i, idx) in paginationRange" :key="idx">
+                  <span v-if="i === '...'" class="px-2 text-orange-500">...</span>
+
+                  <Button
+                    v-else
+                    :variant="page === i ? 'outline' : 'ghost'"
+                    :disabled="page === i"
+                    @click="page = i as number"
+                    :class="
+                      page === i
+                        ? 'bg-orange-700 text-white hover:bg-orange-800'
+                        : 'text-orange-800 border-orange-300'
+                    "
+                  >
+                    {{ i }}
+                  </Button>
+                </template>
+              </div>
+
+              <div class="flex sm:hidden items-center gap-2 text-orange-800">
+                <span class="font-semibold">{{ page }}</span>
+              </div>
+
               <Button
-                v-for="i in totalPages"
-                :key="i"
-                :variant="page === i ? 'default' : 'outline'"
-                :disabled="page === i"
-                @click="page = i"
+                variant="outline"
+                :disabled="page >= totalPages"
+                @click="page++"
                 class="text-orange-800"
               >
-                {{ i }}
-              </Button>
-
-              <Button variant="outline" :disabled="page >= totalPages" @click="page++" class="text-orange-800">
                 Next
               </Button>
             </div>
@@ -180,7 +232,6 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
           <p v-else class="text-gray-500 text-center">Great Job! You have completed all tasks.</p>
         </CardContent>
       </Card>
-
 
       <Card class="p-4 flex-1">
         <CardHeader>

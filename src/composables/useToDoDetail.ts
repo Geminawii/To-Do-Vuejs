@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
-import { toast } from 'sonner'
+import { toast } from 'vue-sonner'
 import localforage from 'localforage'
 import type { Todo } from '@/types'
 
