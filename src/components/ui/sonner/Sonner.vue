@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { Toaster as Sonner } from "vue-sonner"
-type SonnerProps = InstanceType<typeof Sonner>['$props']
 
-const props = defineProps<SonnerProps>()
+const props = defineProps<Record<string, unknown>>()
 </script>
 
 <template>
