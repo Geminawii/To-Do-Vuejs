@@ -16,7 +16,6 @@ const minimized = ref(true);
 const messagesEndRef = ref<HTMLElement | null>(null);
 
 
-
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
