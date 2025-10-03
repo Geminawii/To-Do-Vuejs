@@ -91,9 +91,8 @@ function getBestMatchFromFAQs(msg: string): string | null {
 
 async function sendMessage(messages: Message[]): Promise<string> {
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  console.log(" Gemini API key:", API_KEY);
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${API_KEY}`;
-   console.log("API URL:", API_URL);
+
   const latestMsg = messages[messages.length - 1]?.content ?? '';
   const faqReply = getBestMatchFromFAQs(latestMsg);
   if (faqReply) return faqReply;
