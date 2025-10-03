@@ -13,9 +13,9 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "server": "tsx src/api/server.ts",
+    "server": "tsx api/server.ts",
     "start": "node dist/server.js",
-     "build": "vite build && tsup src/api/server.ts --format esm --out-dir dist"
+    "build": "vite build && tsup src/api/server.ts --format esm --out-dir dist"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",

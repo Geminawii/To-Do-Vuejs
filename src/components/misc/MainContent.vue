@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useTodos } from '@/composables/useToDos'
 import TimeGreeting from './TimeGreeting.vue'
 import TaskItem from './TaskItem.vue'
@@ -11,6 +11,7 @@ import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import ChatBot from './JustAskEet.vue'
 import AddToDo from '../modals/AddToDo.vue'
+import LoaderComp from '../ui/LoaderComp.vue'
 
 interface Props {
   user?: string
@@ -37,6 +38,20 @@ const filteredTodos = computed(() => {
       if (props.filter === 'incomplete') return !task.completed
       return true
     })
+})
+
+const showLoader = ref(true)
+
+watch(isLoading, (newVal) => {
+  if (!newVal) {
+    // hold loader for 5s after todos are fetched
+    setTimeout(() => {
+      showLoader.value = false
+    }, 5000)
+  } else {
+    // reset loader when re-fetching
+    showLoader.value = true
+  }
 })
 
 const pageSize = 10
@@ -112,10 +127,16 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
 
 <template>
   <p v-if="isError" aria-live="assertive" class="p-6 text-orange-800">Error loading todos.</p>
-  <p v-if="isLoading" aria-live="assertive" class="p-6 text-orange-800">Loading your todos...</p>
 
+  <div v-else-if="showLoader" class="flex flex-col items-center justify-center p-10">
+    <LoaderComp />
+    <!-- 👈 use your actual loader component -->
+    <p class="mt-4 text-orange-800 font-semibold">Loading your todos...</p>
+  </div>
+
+  <!-- Empty state -->
   <p
-    v-else-if="!isLoading && allTodos.length === 0"
+    v-else-if="allTodos.length === 0"
     class="p-6 text-orange-800 flex items-center justify-center text-lg font-extrabold"
   >
     No tasks available just yet!
