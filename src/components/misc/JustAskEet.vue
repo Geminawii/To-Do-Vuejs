@@ -34,7 +34,7 @@ function clearChat() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-
+console.log("Env dump:", import.meta.env)
 
 const faqAnswers: Record<string, string> = {
   'what is justdoeet': `
