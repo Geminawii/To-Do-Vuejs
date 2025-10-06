@@ -6,4 +6,7 @@ declare module "vue-sonner" {
     [key: string]: unknown
   }
 }
-
+declare module '@f3ve/vue-markdown-it' {
+  import { defineComponent } from 'vue';
+  export const VueMarkdownIt: ReturnType<typeof defineComponent>;
+}

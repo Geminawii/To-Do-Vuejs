@@ -1,4 +1,3 @@
-<!-- src/pages/Login.vue -->
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue"
 import LoginForm from '../components/forms/LoginForm.vue'
@@ -36,7 +35,7 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="flex flex-col md:flex-row h-screen bg-white">
- 
+
     <section class="md:hidden w-full h-full flex flex-col items-center justify-center px-4 py-6 text-orange-800">
       <LoginForm v-if="showForm" />
       <template v-else>

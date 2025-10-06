@@ -10,6 +10,7 @@ import { useCategories } from '@/composables/useCategories'
 import { assignTodoToCategory } from '@/utils/localsstorage'
 import { Icon } from '@iconify/vue'
 import JustAskEet from '@/components/misc/JustAskEet.vue'
+import MotionWrapper from '@/components/ui/MotionWrapper.vue'
 
 const {
   categories,
@@ -57,6 +58,7 @@ const handleAssignTodo = async (todoId: number) => {
       </div>
 
       <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8 -mt-5">
+        <MotionWrapper :show="true">
         <div class="bg-white rounded-md shadow-md p-4 sm:p-6 min-h-[calc(100vh-5rem)]">
           <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-orange-800">Create A Category</h1>
 
@@ -145,6 +147,7 @@ const handleAssignTodo = async (todoId: number) => {
             </div>
           </div>
         </div>
+        </MotionWrapper>
       </main>
     </div>
 

@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useMutation } from "@tanstack/vue-query";
 import Fuse from 'fuse.js';
+import { VueMarkdownIt } from '@f3ve/vue-markdown-it';
 
 type Message = {
   role: "user" | "bot";
@@ -262,7 +263,7 @@ const { isPending } = mutation;
               : 'bg-orange-50 text-orange-800 self-start',
           ]"
         >
-          <ReactMarkdown>{{ msg.content }}</ReactMarkdown>
+        <VueMarkdownIt :source="msg.content" />
         </div>
 
         <div v-if="mutation.isPending" class="text-orange-600 italic text-sm">
