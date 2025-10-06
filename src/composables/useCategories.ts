@@ -7,6 +7,7 @@ import {
   deleteCategory,
   updateCategory,
   getTodosByCategory,
+  addTodoToCategory
 } from '@/utils/localsstorage'
 import { useQueryClient } from '@tanstack/vue-query'
 
@@ -41,6 +42,14 @@ export function useCategories() {
 
     todosByCategory.value = map
   }
+
+  const assignTodoToCategory = async (todoId: number, catId: number) => {
+  if (!catId) return toast.error('Select a category first')
+  await addTodoToCategory(catId, todoId)
+  await refetchTodos()
+  toast.success('Todo added to category!')
+}
+
 
   const addCategory = async () => {
     if (!newCategory.value.trim()) return toast.error('Name is required')
@@ -105,5 +114,6 @@ export function useCategories() {
     deleteCat,
     startEditing,
     editCategory,
+    assignTodoToCategory
   }
 }

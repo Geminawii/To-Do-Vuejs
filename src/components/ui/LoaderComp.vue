@@ -35,7 +35,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  size: 'w-8 h-8', // Default to 32px
-  color: 'text-orange-500', // Tailwind orange
+  size: 'w-8 h-8',
+  color: 'text-orange-500', 
 })
 </script>

@@ -7,6 +7,7 @@ export interface Todo {
   id: string | number;
   todo: string;
   completed: boolean;
+  [key: string]: unknown
 }
 
 

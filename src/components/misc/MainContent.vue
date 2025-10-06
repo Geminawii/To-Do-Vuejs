@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useTodos } from '@/composables/useToDos'
 import TimeGreeting from './TimeGreeting.vue'
 import TaskItem from './TaskItem.vue'
@@ -11,16 +11,46 @@ import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import ChatBot from './JustAskEet.vue'
 import AddToDo from '../modals/AddToDo.vue'
-import LoaderComp from '../ui/LoaderComp.vue'
+import MotionWrapper from '../ui/MotionWrapper.vue'
 
 interface Props {
   user?: string
   searchTerm: string
   filter: 'completed' | 'incomplete' | 'all'
 }
+
+interface Todo {
+  id: number
+  title: string
+  completed: boolean
+}
+
+const isOverTrash = ref(false)
+const draggedTask = ref<Todo | null>(null)
+
+const onDragStart = (task: Todo) => {
+  draggedTask.value = task
+}
+
+const onDragOverTrash = () => {
+  isOverTrash.value = true
+}
+
+const onDragLeaveTrash = () => {
+  isOverTrash.value = false
+}
+
+const onDropOnTrash = async () => {
+  if (draggedTask.value) {
+    await handleDelete([draggedTask.value.id])
+    draggedTask.value = null
+  }
+  isOverTrash.value = false
+}
+
 const props = defineProps<Props>()
 
-const { allTodos, isLoading, isError, deleteTodos, markAsCompleted, stats } = useTodos()
+const { allTodos, isError, deleteTodos, markAsCompleted, stats } = useTodos()
 const isAddOpen = ref(false)
 
 const page = ref(1)
@@ -38,20 +68,6 @@ const filteredTodos = computed(() => {
       if (props.filter === 'incomplete') return !task.completed
       return true
     })
-})
-
-const showLoader = ref(true)
-
-watch(isLoading, (newVal) => {
-  if (!newVal) {
-    // hold loader for 5s after todos are fetched
-    setTimeout(() => {
-      showLoader.value = false
-    }, 5000)
-  } else {
-    // reset loader when re-fetching
-    showLoader.value = true
-  }
 })
 
 const pageSize = 10
@@ -127,162 +143,171 @@ const onTaskDrop = async (event: DragRemoveEvent<{ id: string | number }>) => {
 
 <template>
   <p v-if="isError" aria-live="assertive" class="p-6 text-orange-800">Error loading todos.</p>
-
-  <div v-else-if="showLoader" class="flex flex-col items-center justify-center p-10">
-    <LoaderComp />
-    <!-- 👈 use your actual loader component -->
-    <p class="mt-4 text-orange-800 font-semibold">Loading your todos...</p>
-  </div>
-
-  <!-- Empty state -->
   <p
     v-else-if="allTodos.length === 0"
     class="p-6 text-orange-800 flex items-center justify-center text-lg font-extrabold"
   >
     No tasks available just yet!
   </p>
-
-  <Card class="bg-white rounded-md shadow-md relative w-full">
-    <CardHeader>
-      <TimeGreeting />
-    </CardHeader>
-    <CardContent class="flex flex-col gap-6">
-      <Card class="p-3 w-full">
-        <CardHeader class="flex flex-col items-center gap-3">
-          <h2 class="text-lg font-semibold text-center">To-Do List</h2>
-          <div class="flex gap-3 items-center justify-center">
-            <Dialog v-model:open="isAddOpen">
-              <DialogTrigger as-child>
-                <Button variant="ghost" size="icon" aria-label="Add Todo">
-                  <Icon icon="mdi:plus" class="w-6 h-6 text-orange-700" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <AddToDo :closeModal="() => (isAddOpen = false)" />
-              </DialogContent>
-            </Dialog>
-
-            <Button
-              @click="handleMarkAsCompleted"
-              variant="ghost"
-              size="icon"
-              aria-label="Mark as Completed"
-              class="text-amber-700"
-            >
-              <Icon icon="mdi:check-bold" class="w-6 h-6" />
-            </Button>
-
-            <Button
-              @click="selectedTodos.length && handleDelete(selectedTodos)"
-              variant="ghost"
-              size="icon"
-              aria-label="Delete Selected"
-              class="text-orange-700"
-            >
-              <Icon icon="mdi:delete" class="w-6 h-6" />
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <div v-if="paginatedTodos.length > 0">
-            <Draggable v-model="paginatedTodos" item-key="id" @remove="onTaskDrop">
-              <template #item="{ element: task, index: i }">
-                <div class="flex items-center gap-2 mb-2 hover:bg-gray-100 p-2 rounded-md">
-                  <input
-                    type="checkbox"
-                    :checked="selectedTodos.includes(task.id)"
-                    @change="handleToggleSelect(task.id)"
-                    class="accent-orange-700"
-                  />
-                  <RouterLink :to="`/todo/${task.id}`" class="flex-1 block hover:underline">
-                    <TaskItem
-                      :task="task"
-                      :index="(page - 1) * pageSize + i"
-                      :isLocal="parseInt(String(task.id)) > 150"
-                    />
-                  </RouterLink>
-                </div>
-              </template>
-            </Draggable>
-
-            <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
-              <Button
-                variant="outline"
-                :disabled="page <= 1"
-                @click="page--"
-                class="text-orange-800"
-              >
-                Prev
-              </Button>
-
-              <div class="hidden sm:flex gap-2">
-                <template v-for="(i, idx) in paginationRange" :key="idx">
-                  <span v-if="i === '...'" class="px-2 text-orange-500">...</span>
-
-                  <Button
-                    v-else
-                    :variant="page === i ? 'outline' : 'ghost'"
-                    :disabled="page === i"
-                    @click="page = i as number"
-                    :class="
-                      page === i
-                        ? 'bg-orange-700 text-white hover:bg-orange-800'
-                        : 'text-orange-800 border-orange-300'
-                    "
-                  >
-                    {{ i }}
+  <MotionWrapper>
+    <Card class="bg-white rounded-md shadow-md relative w-full">
+      <CardHeader>
+        <TimeGreeting />
+      </CardHeader>
+      <CardContent class="flex flex-col gap-6">
+        <Card class="p-3 w-full">
+          <CardHeader class="flex flex-col items-center gap-3">
+            <h2 class="text-lg font-semibold text-center">To-Do List</h2>
+            <div class="flex gap-3 items-center justify-center">
+              <Dialog v-model:open="isAddOpen">
+                <DialogTrigger as-child>
+                  <Button variant="ghost" size="icon" aria-label="Add Todo">
+                    <Icon icon="mdi:plus" class="w-6 h-6 text-orange-700" />
                   </Button>
-                </template>
-              </div>
-
-              <div class="flex sm:hidden items-center gap-2 text-orange-800">
-                <span class="font-semibold">{{ page }}</span>
-              </div>
+                </DialogTrigger>
+                <DialogContent>
+                  <AddToDo :closeModal="() => (isAddOpen = false)" />
+                </DialogContent>
+              </Dialog>
 
               <Button
-                variant="outline"
-                :disabled="page >= totalPages"
-                @click="page++"
-                class="text-orange-800"
+                @click="handleMarkAsCompleted"
+                variant="ghost"
+                size="icon"
+                aria-label="Mark as Completed"
+                class="text-amber-700"
               >
-                Next
+                <Icon icon="mdi:check-bold" class="w-6 h-6" />
               </Button>
-            </div>
-          </div>
-          <p v-else class="text-gray-500 text-center">No To-Dos Found.</p>
-        </CardContent>
-      </Card>
 
-      <Card class="p-4 flex-1">
-        <CardHeader>
-          <h2 class="text-lg font-semibold mb-4 text-orange-800 text-center">Task Progress</h2>
-        </CardHeader>
-        <CardContent>
-          <div class="mb-4">
-            <div class="flex justify-between mb-1 text-orange-800">
-              <span>Completed</span>
-              <span>{{ stats.completedPercentage }}%</span>
+              <div
+                @dragover.prevent="onDragOverTrash"
+                @dragleave="onDragLeaveTrash"
+                @drop="onDropOnTrash"
+                :class="[
+                  'rounded-full p-2 transition-all duration-200 ease-in-out cursor-pointer',
+                  isOverTrash ? 'bg-orange-200 ring-4 ring-orange-500 scale-110' : 'bg-transparent',
+                ]"
+              >
+                <Button
+                  @click="selectedTodos.length && handleDelete(selectedTodos)"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Delete Selected"
+                  class="text-orange-700"
+                >
+                  <Icon icon="mdi:delete" class="w-6 h-6" />
+                </Button>
+              </div>
             </div>
-            <Progress
-              :model-value="stats.completedPercentage"
-              class="h-2 bg-orange-200 [&>div]:bg-orange-700"
-            />
-          </div>
+          </CardHeader>
 
-          <div>
-            <div class="flex justify-between mb-2 text-orange-800">
-              <span>Pending</span>
-              <span>{{ stats.pendingPercentage }}%</span>
+          <CardContent>
+            <div v-if="paginatedTodos.length > 0">
+              <Draggable v-model="paginatedTodos" item-key="id" @remove="onTaskDrop">
+                <template #item="{ element: task, index: i }">
+                  <div
+                    class="flex items-center gap-2 mb-2 hover:bg-gray-100 p-2 rounded-md"
+                    draggable="true"
+                    @dragstart="onDragStart(task)"
+                  >
+                    <input
+                      type="checkbox"
+                      :checked="selectedTodos.includes(task.id)"
+                      @change="handleToggleSelect(task.id)"
+                      class="accent-orange-700"
+                    />
+                    <RouterLink :to="`/todo/${task.id}`" class="flex-1 block hover:underline">
+                      <TaskItem
+                        :task="task"
+                        :index="(page - 1) * pageSize + i"
+                        :isLocal="parseInt(String(task.id)) > 150"
+                      />
+                    </RouterLink>
+                  </div>
+                </template>
+              </Draggable>
+
+              <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  :disabled="page <= 1"
+                  @click="page--"
+                  class="text-orange-800"
+                >
+                  Prev
+                </Button>
+
+                <div class="hidden sm:flex gap-2">
+                  <template v-for="(i, idx) in paginationRange" :key="idx">
+                    <span v-if="i === '...'" class="px-2 text-orange-500">...</span>
+
+                    <Button
+                      v-else
+                      :variant="page === i ? 'outline' : 'ghost'"
+                      :disabled="page === i"
+                      @click="page = i as number"
+                      :class="
+                        page === i
+                          ? 'bg-orange-700 text-white hover:bg-orange-800'
+                          : 'text-orange-800 border-orange-300'
+                      "
+                    >
+                      {{ i }}
+                    </Button>
+                  </template>
+                </div>
+
+                <div class="flex sm:hidden items-center gap-2 text-orange-800">
+                  <span class="font-semibold">{{ page }}</span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  :disabled="page >= totalPages"
+                  @click="page++"
+                  class="text-orange-800"
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-            <Progress
-              :model-value="stats.pendingPercentage"
-              class="h-2 bg-orange-200 [&>div]:bg-orange-500"
-            />
-          </div>
-        </CardContent>
-      </Card>
-    </CardContent>
-    <ChatBot />
-  </Card>
+            <p v-else class="text-gray-500 text-center">
+              No To-Dos Found...Click on the + to begin!
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card class="p-4 flex-1">
+          <CardHeader>
+            <h2 class="text-lg font-semibold mb-4 text-orange-800 text-center">Task Progress</h2>
+          </CardHeader>
+          <CardContent>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1 text-orange-800">
+                <span>Completed</span>
+                <span>{{ stats.completedPercentage }}%</span>
+              </div>
+              <Progress
+                :model-value="stats.completedPercentage"
+                class="h-2 bg-orange-200 [&>div]:bg-orange-700"
+              />
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-2 text-orange-800">
+                <span>Pending</span>
+                <span>{{ stats.pendingPercentage }}%</span>
+              </div>
+              <Progress
+                :model-value="stats.pendingPercentage"
+                class="h-2 bg-orange-200 [&>div]:bg-orange-500"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </CardContent>
+      <ChatBot />
+    </Card>
+  </MotionWrapper>
 </template>

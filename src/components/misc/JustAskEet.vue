@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useMutation } from "@tanstack/vue-query";
 import Fuse from 'fuse.js';
+import { VueMarkdownIt } from '@f3ve/vue-markdown-it';
 
 type Message = {
   role: "user" | "bot";
@@ -91,9 +92,9 @@ function getBestMatchFromFAQs(msg: string): string | null {
 
 async function sendMessage(messages: Message[]): Promise<string> {
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  console.log(" Gemini API key:", API_KEY);
+
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${API_KEY}`;
-   console.log("API URL:", API_URL);
+  
   const latestMsg = messages[messages.length - 1]?.content ?? '';
   const faqReply = getBestMatchFromFAQs(latestMsg);
   if (faqReply) return faqReply;
@@ -263,7 +264,7 @@ const { isPending } = mutation;
               : 'bg-orange-50 text-orange-800 self-start',
           ]"
         >
-          <ReactMarkdown>{{ msg.content }}</ReactMarkdown>
+        <VueMarkdownIt :source="msg.content" />
         </div>
 
         <div v-if="mutation.isPending" class="text-orange-600 italic text-sm">

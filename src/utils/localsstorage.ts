@@ -133,3 +133,14 @@ export async function removeTodoFromCategory(categoryId: number, todoId: number)
   localStorage.setItem(`category:${categoryId}`, JSON.stringify(updated));
   return updated;
 }
+
+ export const addTodoToCategory = async (catId: number, todoId: number) => {
+  const key = 'category_todos'
+  const map = JSON.parse(localStorage.getItem(key) || '{}')
+  if (!map[catId]) map[catId] = []
+  if (!map[catId].includes(todoId)) {
+    map[catId].push(todoId)
+    localStorage.setItem(key, JSON.stringify(map))
+  }
+}
+

@@ -76,11 +76,10 @@ const localFilter = ref(props.filter ?? "all");
 watch(localSearchTerm, (val) => emit('update:searchTerm', val))
 watch(localFilter, (val) => emit('update:filter', val))
 
-// nav links for dropdown
+
 const navLinks = [
   { label: "Dashboard", path: "/dashboard", icon: "mdi:view-dashboard" },
-  { label: "Categories", path: "/categories", icon: "mdi:folder" },
-  { label: "Settings", path: "/settings", icon: "mdi:cog" },
+  { label: "Categories", path: "/categories", icon: "mdi:folder" }
 ];
 </script>
 

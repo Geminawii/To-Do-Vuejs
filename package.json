@@ -16,6 +16,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@f3ve/vue-markdown-it": "^0.2.3",
     "@headlessui/vue": "^1.7.23",
     "@tailwindcss/postcss": "^4.1.13",
     "@tanstack/vue-query": "^5.90.2",
